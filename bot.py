@@ -13,13 +13,13 @@ import time
 
 
 def getRandomQuote():
-    l = random.choice(look.values())  # Get random set of quotes
+    l = random.choice(list(look.values()))  # Get random set of quotes
     return random.choice(l)  # return random quote from that list
 
 
 def getQuoteFromContext(context):
     # Get all the keys from the look up and try to match words to them
-    for k in look.keys():
+    for k in list(look.keys()):
         for e in k:
             if e in context.lower():
                 return random.choice(look[k])
@@ -46,19 +46,11 @@ if __name__ == '__main__':
 
     comments = subreddit.stream.comments()
 
-    last_post = 0 # Will try to automatically post when it starts
-
-    posts_visited = list() # List of the posts we have already posted in automatically.
-
     for comment in comments:
-
-        print("Post Title: " + comment.submission.title + '\n\n')
-
-        un = comment.submission.author.name
-
         print("Tick")
-
-
+        print("Post Title: " + comment.submission.title + '\n')
+        print("Comment Body: " + comment.body + '\n\n')
+        un = comment.submission.author.name
 
         if comment.body == summon:
             try:
@@ -80,25 +72,7 @@ if __name__ == '__main__':
                 msg = getRandomQuote().format(comment.author)
             print("Replying to a user's request to hedbot themselves with: {}".format(msg))
             comment.reply(msg)
-        # Automatic posting option, happens once per hour and only once per post
-        elif getQuoteFromContext(comment.body) != None:
-            if time.time() - last_post > min_break and comment.submission.id not in posts_visited:
-                msg = getQuoteFromContext(comment.body)
-                print("Replying automatically to a post with: {}".format(msg))
-                comment.replay(msg)
-                last_post = time.time()
-                posts_visited.append(comment.submission.id)
 
-        if getQuoteFromContext(comment.submission.title) != None:
-            # Get quote based on title of post
-            msg = getQuoteFromContext(comment.submission.title).format(un)
-
-            # Post the quote as a top level comment
-            if time.time() - last_post > min_break and comment.submission.id not in posts_visited:
-                print("Replying to this post because of the title with: {}\n".format(msg))
-                comment.submission.reply(msg)
-                last_post = time.time()
-                posts_visited.append(comment.submission.id)
             
 
 
