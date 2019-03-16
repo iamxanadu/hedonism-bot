@@ -54,4 +54,4 @@ look = {luxury_keywords: luxury_quotes, sex_keywords: sex_quotes, gluttony_keywo
 summon = '!hedbot'
 
 # Post timer. Limit automatic responses to once in this period.
-min_break = 3600 #s in one hour
+min_break = 600 #s in one hour

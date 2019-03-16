@@ -58,16 +58,8 @@ if __name__ == '__main__':
 
         print("Tick")
 
-        if getQuoteFromContext(comment.submission.title) != None:
-            # Get quote based on title of post
-            msg = getQuoteFromContext(comment.submission.title).format(un)
 
-            # Post the quote as a top level comment
-            if time.time() - last_post > min_break:
-                print("Replying to this post because of the title with: {}\n".format(msg))
-                comment.submission.reply(msg)
-                last_post = time.time()
-                
+
         if comment.body == summon:
             try:
                 parent_comment = reddit.comment(
@@ -94,6 +86,17 @@ if __name__ == '__main__':
                 msg = getQuoteFromContext(comment.body)
                 print("Replying automatically to a post with: {}".format(msg))
                 comment.replay(msg)
+                last_post = time.time()
+                posts_visited.append(comment.submission.id)
+
+        if getQuoteFromContext(comment.submission.title) != None:
+            # Get quote based on title of post
+            msg = getQuoteFromContext(comment.submission.title).format(un)
+
+            # Post the quote as a top level comment
+            if time.time() - last_post > min_break and comment.submission.id not in posts_visited:
+                print("Replying to this post because of the title with: {}\n".format(msg))
+                comment.submission.reply(msg)
                 last_post = time.time()
                 posts_visited.append(comment.submission.id)
             
